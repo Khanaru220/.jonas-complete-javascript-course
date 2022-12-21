@@ -24,9 +24,9 @@ const mockPosition = {
   timestamp: 1567849894270,
 };
 
-/* Use mock object instead
-  if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(
+if (navigator.geolocation) {
+  /* Use mock object instead
+    navigator.geolocation.getCurrentPosition(
     position => {
       console.log(position);
     },
@@ -35,6 +35,8 @@ const mockPosition = {
       alert('Could not get your position');
     }
   );
-} */
-
-console.log(mockPosition);
+ */
+  const { latitude, longitude } = mockPosition.coords;
+  const GGMapURL = `https://www.google.com/maps/@${latitude},${longitude},18.04z`;
+  console.log(GGMapURL);
+}
