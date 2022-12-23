@@ -31,15 +31,28 @@ if (navigator.geolocation) {
       console.log(position);
     },
     () => {
-      // (TODO) not let app stop: offer user manual input (country name -> location of capital)
+      /*
+       (TODO) not let app stop: offer user manual input (country name -> location of capital)
+       use OSM API to return data: https://stackoverflow.com/a/63505853/14733188 */ /*
+       
       alert('Could not get your position');
     }
   );
 }
 */
 const { latitude, longitude } = mockPosition.coords;
+const coords = [latitude, longitude];
 const GGMapURL = `https://www.google.com/maps/@${latitude},${longitude},18.04z`;
 console.log(GGMapURL);
 
-const map = L.map('map').setView([latitude, longitude], 13);
-// (TODO) leaflet map not display yet
+// initilize Leaflet map: enable mouse, touch event (like bone)
+const map = L.map('map').setView(coords, 16);
+
+// add tile layer from OpenStreetMap via URL template (like skin)
+L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+  maxZoom: 19, // prevent continue scroll-in
+  attribution:
+    '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+}).addTo(map);
+
+const marker = L.marker(coords).addTo(map);
