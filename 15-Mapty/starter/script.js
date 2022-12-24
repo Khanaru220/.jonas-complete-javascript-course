@@ -55,4 +55,19 @@ L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
     '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 }).addTo(map);
 
-const marker = L.marker(coords).addTo(map);
+const marker = L.marker(coords)
+  .addTo(map)
+  .bindPopup('A pretty CSS3 popup.<br> Easily customizablw.')
+  .openPopup();
+
+// (TODO) not zoom when double click on marker
+// add event click to get coordination + move marker
+map.on('click', e => {
+  marker.setLatLng(e.latlng).openPopup();
+  form.classList.remove('hidden');
+});
+
+// (TODO) do my own before watching
+// 1. Listen: fill form Distance + Duration
+// 2. calculate Cadence
+// 3. show OK <button>
