@@ -19,7 +19,8 @@ const [inputDistanceEL, inputTimeEl, inputCadenceEl, btnSubmit] = [
 [inputDistanceEL, inputTimeEl].forEach(el => {
   el.addEventListener('change', () => {
     if ([inputDistanceEL, inputTimeEl].every(el => el.value !== '')) {
-      inputCadenceEl.value = inputDistanceEL.value / inputTimeEl.value;
+      inputCadenceEl.value =
+        Math.round((inputDistanceEL.value / inputTimeEl.value) * 100) / 100;
       btnSubmit.style.display = 'initial';
     }
   });
