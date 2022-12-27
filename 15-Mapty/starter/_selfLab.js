@@ -26,7 +26,7 @@ const [inputDistanceEL, inputTimeEl, inputCadenceEl, btnSubmit] = [
   el.addEventListener('change', () => {
     if ([inputDistanceEL, inputTimeEl].every(el => el.value !== '')) {
       inputCadenceEl.value =
-        Math.round((inputDistanceEL.value / inputTimeEl.value) * 100) / 100;
+        Math.round((inputDistanceEL.value / inputTimeEl.value) * 100) / 100; // source idea: https://stackoverflow.com/a/12830454/14733188
       btnSubmit.style.display = 'initial';
     }
   });

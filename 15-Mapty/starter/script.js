@@ -12,6 +12,7 @@ const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
 
 const getPosition = () => {
+  // source idea: https://whatwebcando.today/articles/use-geolocation-api-promises/
   return new Promise(resolve =>
     navigator.geolocation.getCurrentPosition(
       position => resolve(position),
