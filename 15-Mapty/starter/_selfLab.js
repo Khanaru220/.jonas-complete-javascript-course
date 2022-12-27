@@ -9,6 +9,12 @@
 // 3. calculate the cadence
 console.log(form.elements);
 
+// init
+// reset form each time load page
+window.addEventListener('load', () => {
+  form.reset(); // form of 'script.js'
+});
+
 const [inputDistanceEL, inputTimeEl, inputCadenceEl, btnSubmit] = [
   [...form.elements].find(el => el.classList.contains('form__input--distance')),
   [...form.elements].find(el => el.classList.contains('form__input--duration')),
