@@ -57,7 +57,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
 
 const marker = L.marker(coords)
   .addTo(map)
-  .bindPopup('A pretty CSS3 popup.<br> Easily customizablw.')
+  .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
   .openPopup();
 
 // (TODO) not zoom when double click on marker
@@ -66,8 +66,3 @@ map.on('click', e => {
   marker.setLatLng(e.latlng).openPopup();
   form.classList.remove('hidden');
 });
-
-// (TODO) do my own before watching
-// 1. Listen: fill form Distance + Duration
-// 2. calculate Cadence
-// 3. show OK <button>
