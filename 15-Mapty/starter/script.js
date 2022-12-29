@@ -38,8 +38,11 @@ const getPosition = () => {
 };
 
 (async () => {
-  const position = await getPosition(); // (?) is there any way to access property of promise value in one line
-  const { latitude, longitude } = position.coords;
+  // Source: a Trà
+  const {
+    coords: { latitude, longitude },
+  } = await getPosition(); // (?) is there any way to access property of promise value in one line
+
   const coords = [latitude, longitude];
 
   // initilize Leaflet map: enable mouse, touch event (like bone)
