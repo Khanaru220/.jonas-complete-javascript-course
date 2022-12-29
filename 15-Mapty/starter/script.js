@@ -42,7 +42,6 @@ const getPosition = () => {
   const {
     coords: { latitude, longitude },
   } = await getPosition();
-
   const coords = [latitude, longitude];
 
   // initilize Leaflet map: enable mouse, touch event (like bone)
@@ -53,13 +52,21 @@ const getPosition = () => {
     attribution:
       '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   }).addTo(map);
-  const marker = L.marker(coords)
-    .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
-    .addTo(map);
+
   // (TODO) not zoom when double click on marker
   // add event click to get coordination + move marker
   map.on('click', e => {
-    marker.setLatLng(e.latlng).addTo(map).openPopup();
+    const { lat: latitude, lng: longitude } = e.latlng;
+    const coords = [latitude, longitude];
+
+    const marker = L.marker(coords)
+      .bindPopup('A pretty CSS3 popup.<br> Easily customizable.', {
+        autoClose: false,
+        closeOnClick: false,
+      })
+      .addTo(map) // (?) when call addTo(map) after openPopup(), popup won't open | (assume) returned value (map,popup) effect subject of method / addTo(map) will trigger some autoClose behaviour of popup
+      .openPopup();
+
     form.classList.remove('hidden');
   });
 })();
