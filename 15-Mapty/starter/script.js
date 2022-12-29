@@ -38,10 +38,10 @@ const getPosition = () => {
 };
 
 (async () => {
-  // Source: a Trà
+  // source idea: a Trà
   const {
     coords: { latitude, longitude },
-  } = await getPosition(); // (?) is there any way to access property of promise value in one line
+  } = await getPosition();
 
   const coords = [latitude, longitude];
 

@@ -7,7 +7,8 @@
 // 1. Listen 'change' of both input distance + duration
 // 2. check whether both not empty
 // 3. calculate the cadence
-console.log(form.elements);
+
+const btnSubmit = document.querySelector('.form__btn');
 
 // init
 // reset form each time load page
@@ -15,18 +16,11 @@ window.addEventListener('load', () => {
   form.reset(); // form of 'script.js'
 });
 
-const [inputDistanceEL, inputTimeEl, inputCadenceEl, btnSubmit] = [
-  [...form.elements].find(el => el.classList.contains('form__input--distance')),
-  [...form.elements].find(el => el.classList.contains('form__input--duration')),
-  [...form.elements].find(el => el.classList.contains('form__input--cadence')),
-  [...form.elements].find(el => el.classList.contains('form__btn')),
-];
-
-[inputDistanceEL, inputTimeEl].forEach(el => {
+[inputDistance, inputDuration].forEach(el => {
   el.addEventListener('change', () => {
-    if ([inputDistanceEL, inputTimeEl].every(el => el.value !== '')) {
-      inputCadenceEl.value =
-        Math.round((inputDistanceEL.value / inputTimeEl.value) * 100) / 100; // source idea: https://stackoverflow.com/a/12830454/14733188
+    if ([inputDistance, inputDuration].every(el => el.value !== '')) {
+      inputCadence.value =
+        Math.round((inputDistance.value / inputDuration.value) * 100) / 100; // source idea: https://stackoverflow.com/a/12830454/14733188
       btnSubmit.style.display = 'initial';
     }
   });
