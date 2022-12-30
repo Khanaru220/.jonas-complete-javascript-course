@@ -19,8 +19,9 @@ window.addEventListener('load', () => {
 [inputDistance, inputDuration].forEach(el => {
   el.addEventListener('change', () => {
     if ([inputDistance, inputDuration].every(el => el.value !== '')) {
+      // round to specific decimal: https://stackoverflow.com/a/12830454/14733188
       inputCadence.value =
-        Math.round((inputDistance.value / inputDuration.value) * 100) / 100; // source idea: https://stackoverflow.com/a/12830454/14733188
+        Math.round((inputDistance.value / inputDuration.value) * 100) / 100;
       btnSubmit.style.display = 'initial';
     }
   });

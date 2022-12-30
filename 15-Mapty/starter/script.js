@@ -11,14 +11,24 @@ const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
 
-const getPosition = () => {
-  // source idea: https://whatwebcando.today/articles/use-geolocation-api-promises/
-  return new Promise(resolve =>
+/*  (TODO) share on Udemy: an option for non-access geolocation (privacy)
+- want to use app but not want provide geolocation
+- getCurrentPosition is async() -> must work via Callback or Promise
+- write two options for learners
+- mockPosition is plain object has barely information we need for this app
+  (not full proprototype like original)
+*/
+/*    (TODO) not let app stop: offer user manual input
+ - (improve idea) can prompt input city, and return random lat,lng from that
+   (country name -> location of capital)
+ - use OSM API to return data: https://stackoverflow.com/a/63505853/14733188
+*/
+const getPosition = () =>
+  // convert callback to promise: https://whatwebcando.today/articles/use-geolocation-api-promises/
+  new Promise(resolve =>
     navigator.geolocation.getCurrentPosition(
       position => resolve(position),
       () => {
-        //  (TODO) not let app stop: offer user manual input (country name -> location of capital)
-        //  use OSM API to return data: https://stackoverflow.com/a/63505853/14733188
         const mockPosition = {
           coords: {
             accuracy: 1446,
@@ -35,10 +45,9 @@ const getPosition = () => {
       }
     )
   );
-};
 
 (async () => {
-  // source idea: a Trà
+  // destruturing same line with fetch: a Trà
   const {
     coords: { latitude, longitude },
   } = await getPosition();
@@ -59,12 +68,16 @@ const getPosition = () => {
     const { lat: latitude, lng: longitude } = e.latlng;
     const coords = [latitude, longitude];
 
+    /*  (?) when call addTo(map) after openPopup(), popup won't open
+    (assume) returned value (map,popup) effect subject of method
+    - addTo(map) will trigger some autoClose behaviour of popup
+     */
     const marker = L.marker(coords)
       .bindPopup('A pretty CSS3 popup.<br> Easily customizable.', {
         autoClose: false,
         closeOnClick: false,
-      })
-      .addTo(map) // (?) when call addTo(map) after openPopup(), popup won't open | (assume) returned value (map,popup) effect subject of method / addTo(map) will trigger some autoClose behaviour of popup
+      }) // (TODO) share this option on Udemy if no one pointed out
+      .addTo(map)
       .openPopup();
 
     form.classList.remove('hidden');
