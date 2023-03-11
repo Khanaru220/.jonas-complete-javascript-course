@@ -55,6 +55,7 @@ const getPosition = () =>
 
   // initilize Leaflet map: enable mouse, touch event (like bone)
   const map = L.map('map').setView(coords, 16);
+
   // add tile layer from OpenStreetMap via URL template (like skin)
   L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
     maxZoom: 19, // prevent continue scroll-in
@@ -64,8 +65,8 @@ const getPosition = () =>
 
   // (TODO) not zoom when double click on marker
   // add event click to get coordination + move marker
-  map.on('click', e => {
-    const { lat: latitude, lng: longitude } = e.latlng;
+  map.on('click', mapEvent => {
+    const { lat: latitude, lng: longitude } = mapEvent.latlng;
     const coords = [latitude, longitude];
 
     /*  (?) when call addTo(map) after openPopup(), popup won't open
@@ -73,10 +74,13 @@ const getPosition = () =>
     - addTo(map) will trigger some autoClose behaviour of popup
      */
     const marker = L.marker(coords)
-      .bindPopup('A pretty CSS3 popup.<br> Easily customizable.', {
-        autoClose: false,
-        closeOnClick: false,
-      }) // (TODO) share this option on Udemy if no one pointed out
+      .bindPopup('Workout', {
+        maxWidth: 250,
+        minWidth: 100,
+        autoClose: false, // when another popup opened
+        closeOnClick: false, // when click other places on map
+        className: 'running-popup',
+      })
       .addTo(map)
       .openPopup();
 
