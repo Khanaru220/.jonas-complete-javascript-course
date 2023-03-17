@@ -86,4 +86,6 @@ const getPosition = () =>
 
     form.classList.remove('hidden');
   });
+
+  map.off('dblclick'); // prevent zoom. An alternative of e.preventDefault()
 })();
