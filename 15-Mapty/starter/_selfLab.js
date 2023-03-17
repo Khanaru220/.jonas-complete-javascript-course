@@ -18,11 +18,18 @@ window.addEventListener('load', () => {
 
 [inputDistance, inputDuration].forEach(el => {
   el.addEventListener('change', () => {
-    if ([inputDistance, inputDuration].every(el => el.value !== '')) {
+    if (
+      [inputDistance, inputDuration].every(
+        el => el.value !== '' && !isNaN(+el.value) && isFinite(+el.value)
+      )
+    ) {
       // round to specific decimal: https://stackoverflow.com/a/12830454/14733188
       inputCadence.value =
         Math.round((inputDistance.value / inputDuration.value) * 100) / 100;
       btnSubmit.style.display = 'initial';
+    } else {
+      inputCadence.value = undefined;
+      btnSubmit.style.display = 'none';
     }
   });
 });
