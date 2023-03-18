@@ -54,7 +54,8 @@ const getPosition = () =>
   const coords = [latitude, longitude];
 
   // initilize Leaflet map: enable mouse, touch event (like bone)
-  const map = L.map('map').setView(coords, 16);
+
+  const map = L.map('map', { doubleClickZoom: false }).setView(coords, 16);
 
   // add tile layer from OpenStreetMap via URL template (like skin)
   L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
@@ -63,7 +64,9 @@ const getPosition = () =>
       '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   }).addTo(map);
 
-  // (TODO) not zoom when double click on marker
+  // reset form when popup (re)open
+  map.on('popupopen', () => form.reset());
+
   // add event click to get coordination + move marker
   map.on('click', mapEvent => {
     const { lat: latitude, lng: longitude } = mapEvent.latlng;
@@ -73,7 +76,7 @@ const getPosition = () =>
     (assume) returned value (map,popup) effect subject of method
     - addTo(map) will trigger some autoClose behaviour of popup
      */
-    const marker = L.marker(coords)
+    L.marker(coords)
       .bindPopup('Workout', {
         maxWidth: 250,
         minWidth: 100,
@@ -87,5 +90,5 @@ const getPosition = () =>
     form.classList.remove('hidden');
   });
 
-  map.off('dblclick'); // prevent zoom. An alternative of e.preventDefault()
+  // (FIXME) first multiple clicks will create diff marker/popup
 })();

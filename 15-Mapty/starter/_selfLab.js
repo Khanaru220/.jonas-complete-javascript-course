@@ -17,7 +17,7 @@ window.addEventListener('load', () => {
 });
 
 [inputDistance, inputDuration].forEach(el => {
-  el.addEventListener('change', () => {
+  el.addEventListener('input', () => {
     if (
       [inputDistance, inputDuration].every(
         el => el.value !== '' && !isNaN(+el.value) && isFinite(+el.value)
@@ -28,7 +28,7 @@ window.addEventListener('load', () => {
         Math.round((inputDistance.value / inputDuration.value) * 100) / 100;
       btnSubmit.style.display = 'initial';
     } else {
-      inputCadence.value = undefined;
+      inputCadence.value = null;
       btnSubmit.style.display = 'none';
     }
   });
