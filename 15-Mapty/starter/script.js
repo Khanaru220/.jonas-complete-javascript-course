@@ -65,10 +65,14 @@ const getPosition = () =>
   }).addTo(map);
 
   // reset form when popup (re)open
-  map.on('popupopen', () => form.reset());
+  map.on('popupopen', () => {
+    form.reset();
+    btnSubmit.style.display = 'none'; // (IDEA) find better way to sync submit btn with input
+  });
 
   // add event click to get coordination + move marker
   map.on('click', mapEvent => {
+    // (TODO) new marker cause focus on input field
     const { lat: latitude, lng: longitude } = mapEvent.latlng;
     const coords = [latitude, longitude];
 
@@ -76,16 +80,34 @@ const getPosition = () =>
     (assume) returned value (map,popup) effect subject of method
     - addTo(map) will trigger some autoClose behaviour of popup
      */
-    L.marker(coords)
-      .bindPopup('Workout', {
+    const tempMarker = L.marker(coords)
+      .bindPopup('Set your goal', {
         maxWidth: 250,
         minWidth: 100,
-        autoClose: false, // when another popup opened
-        closeOnClick: false, // when click other places on map
-        className: 'running-popup',
+      })
+      .on('popupclose', function () {
+        this.remove(); // make use of popup behaviour "autoclost,closeonclick"
       })
       .addTo(map)
       .openPopup();
+
+    // form submitted -> marker persist + add popup content
+    form.addEventListener('submit', e => {
+      const popup = tempMarker.getPopup();
+      e.preventDefault();
+      tempMarker.off('popupclose');
+
+      popup.setContent('Workout');
+      popup.options = {
+        ...popup.options,
+        autoClose: false,
+        closeOnClick: false,
+        className: 'running-popup',
+      };
+
+      // (IDEA) find official way to update popup (bindPopup() update only content, not options)
+      // (FIXME) reclick in marker cause error
+    });
 
     form.classList.remove('hidden');
   });
