@@ -80,33 +80,34 @@ const getPosition = () =>
     (assume) returned value (map,popup) effect subject of method
     - addTo(map) will trigger some autoClose behaviour of popup
      */
+    const popupOptions = {
+      maxWidth: 250,
+      minWidth: 100,
+    };
     const tempMarker = L.marker(coords)
-      .bindPopup('Set your goal', {
-        maxWidth: 250,
-        minWidth: 100,
-      })
+      .bindPopup('Set your goal', popupOptions)
       .on('popupclose', function () {
         this.remove(); // make use of popup behaviour "autoclost,closeonclick"
       })
+      .on('click', () => console.log('click'))
       .addTo(map)
       .openPopup();
 
-    // form submitted -> marker persist + add popup content
+    // form submitted -> marker persist + update pop content/options
     form.addEventListener('submit', e => {
-      const popup = tempMarker.getPopup();
       e.preventDefault();
       tempMarker.off('popupclose');
-
-      popup.setContent('Workout');
-      popup.options = {
-        ...popup.options,
-        autoClose: false,
-        closeOnClick: false,
-        className: 'running-popup',
-      };
+      tempMarker
+        .bindPopup('Workout', {
+          ...popupOptions,
+          autoClose: false,
+          closeOnClick: false,
+          className: 'running-popup',
+        })
+        .openPopup();
+      // (TODO) remove event handler submit from 'form'
 
       // (IDEA) find official way to update popup (bindPopup() update only content, not options)
-      // (FIXME) reclick in marker cause error
     });
 
     form.classList.remove('hidden');
