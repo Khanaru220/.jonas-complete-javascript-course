@@ -52,10 +52,9 @@ const getPosition = () =>
     coords: { latitude, longitude },
   } = await getPosition();
   const coords = [latitude, longitude];
-
-  // initilize Leaflet map: enable mouse, touch event (like bone)
-
-  const map = L.map('map', { doubleClickZoom: false }).setView(coords, 16);
+  const map = L.map('map', { doubleClickZoom: false }).setView(coords, 16); // initilize Leaflet map: enable mouse, touch event (like bone)
+  let tempMarker;
+  let popupOptions = {};
 
   // add tile layer from OpenStreetMap via URL template (like skin)
   L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
@@ -75,43 +74,44 @@ const getPosition = () =>
     // (TODO) new marker cause focus on input field
     const { lat: latitude, lng: longitude } = mapEvent.latlng;
     const coords = [latitude, longitude];
-
     /*  (?) when call addTo(map) after openPopup(), popup won't open
     (assume) returned value (map,popup) effect subject of method
     - addTo(map) will trigger some autoClose behaviour of popup
      */
-    const popupOptions = {
+    popupOptions = {
       maxWidth: 250,
       minWidth: 100,
     };
-    const tempMarker = L.marker(coords)
+    tempMarker = L.marker(coords)
       .bindPopup('Set your goal', popupOptions)
       .on('popupclose', function () {
         this.remove(); // make use of popup behaviour "autoclost,closeonclick"
+        // (TODO) remove: when click another marker (which closes its popup)
       })
-      .on('click', () => console.log('click'))
       .addTo(map)
       .openPopup();
 
-    // form submitted -> marker persist + update pop content/options
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      tempMarker.off('popupclose');
-      tempMarker
-        .bindPopup('Workout', {
-          ...popupOptions,
-          autoClose: false,
-          closeOnClick: false,
-          className: 'running-popup',
-        })
-        .openPopup();
-      // (TODO) remove event handler submit from 'form'
-
-      // (IDEA) find official way to update popup (bindPopup() update only content, not options)
-    });
-
+    inputDistance.focus();
     form.classList.remove('hidden');
   });
+
+  // form submitted -> marker persist + update popup content/options
+  const addPersistMarkerOnSubmit = e => {
+    e.preventDefault();
+    tempMarker.off('popupclose');
+    tempMarker
+      .bindPopup('Workout', {
+        ...popupOptions,
+        autoClose: false,
+        closeOnClick: false,
+        className: 'running-popup',
+      })
+      .openPopup();
+
+    // (IDEA) find official way to update popup (my way need to keep track previous option object)
+    form.removeEventListener('submit', addPersistMarkerOnSubmit); // (FIXME) putting addEvent outside 'click' -> cause after remove, the submit can't re-added
+  };
+  form.addEventListener('submit', addPersistMarkerOnSubmit);
 
   // (FIXME) first multiple clicks will create diff marker/popup
 })();
