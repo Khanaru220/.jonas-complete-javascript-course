@@ -71,6 +71,10 @@ const getPosition = () =>
 
   // add event click to get coordination + move marker
   map.on('click', mapEvent => {
+    createTempMarker(mapEvent);
+  });
+
+  const createTempMarker = mapEvent => {
     // (TODO) new marker cause focus on input field
     const { lat: latitude, lng: longitude } = mapEvent.latlng;
     const coords = [latitude, longitude];
@@ -90,14 +94,17 @@ const getPosition = () =>
       })
       .addTo(map)
       .openPopup();
+    // (!) non-pure function, relate with outter scope var: 'tempMarker';  cause order of functions executions matter
 
     inputDistance.focus();
     form.classList.remove('hidden');
-  });
+  };
 
   // form submitted -> marker persist + update popup content/options
   const addPersistMarkerOnSubmit = e => {
     e.preventDefault();
+
+    // Display marker
     tempMarker.off('popupclose');
     tempMarker
       .bindPopup('Workout', {
@@ -108,10 +115,13 @@ const getPosition = () =>
       })
       .openPopup();
 
+    // Reset form
+    form.reset();
+
     // (IDEA) find official way to update popup (my way need to keep track previous option object)
-    form.removeEventListener('submit', addPersistMarkerOnSubmit); // (FIXME) putting addEvent outside 'click' -> cause after remove, the submit can't re-added
+    form.removeEventListener('submit', addPersistMarkerOnSubmit); // (FIXME) putting addEvent outside 'click' -> cause after remove marker, the submit's handler reset to default
   };
   form.addEventListener('submit', addPersistMarkerOnSubmit);
-
-  // (FIXME) first multiple clicks will create diff marker/popup
+  // (TODO) reset form after submit
+  // (?) should i put this function outside async()?
 })();
