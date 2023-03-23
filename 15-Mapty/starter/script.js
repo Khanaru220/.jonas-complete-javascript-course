@@ -74,6 +74,7 @@ const getPosition = () =>
     createTempMarker(mapEvent);
   });
 
+  // creat tempMarker on click map
   const createTempMarker = mapEvent => {
     // (TODO) new marker cause focus on input field
     const { lat: latitude, lng: longitude } = mapEvent.latlng;
@@ -100,9 +101,11 @@ const getPosition = () =>
     form.classList.remove('hidden');
   };
 
-  // form submitted -> marker persist + update popup content/options
+  // submit form -> marker persist + update popup content/options
   const addPersistMarkerOnSubmit = e => {
     e.preventDefault();
+
+    if (!tempMarker) return;
 
     // Display marker
     tempMarker.off('popupclose');
@@ -114,14 +117,12 @@ const getPosition = () =>
         className: 'running-popup',
       })
       .openPopup();
-
-    // Reset form
-    form.reset();
-
     // (IDEA) find official way to update popup (my way need to keep track previous option object)
-    form.removeEventListener('submit', addPersistMarkerOnSubmit); // (FIXME) putting addEvent outside 'click' -> cause after remove marker, the submit's handler reset to default
+
+    // Reset form, prevent form re-submit with previous Marker
+    form.classList.add('hidden');
+    tempMarker = undefined;
   };
   form.addEventListener('submit', addPersistMarkerOnSubmit);
-  // (TODO) reset form after submit
   // (?) should i put this function outside async()?
 })();
