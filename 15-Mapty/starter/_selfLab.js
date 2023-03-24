@@ -43,9 +43,6 @@ inputType.addEventListener('change', function () {
       currentMeasureInput = inputCadence;
 
       // Switch display
-      currentMeasureInput
-        .closest('.form__row')
-        .classList.remove('form__row--hidden');
       inputElevation.closest('.form__row').classList.add('form__row--hidden');
       break;
     case 'cycling':
@@ -53,15 +50,15 @@ inputType.addEventListener('change', function () {
 
       currentMeasureInput = inputElevation;
 
-      currentMeasureInput
-        .closest('.form__row')
-        .classList.remove('form__row--hidden');
       inputCadence.closest('.form__row').classList.add('form__row--hidden');
       break;
     default:
       break;
   }
 
+  currentMeasureInput
+    .closest('.form__row')
+    .classList.remove('form__row--hidden');
   // (TODO) it's seems i could make it less repeat
 });
 

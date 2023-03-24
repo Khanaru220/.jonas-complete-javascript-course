@@ -87,7 +87,7 @@ const getPosition = () =>
       maxWidth: 250,
       minWidth: 100,
     };
-    tempMarker = L.marker(coords)
+    tempMarker = L.marker(coords, { opacity: 0.3 })
       .bindPopup('Set your goal', popupOptions)
       .on('popupclose', function () {
         this.remove(); // make use of popup behaviour "autoclost,closeonclick"
@@ -109,6 +109,7 @@ const getPosition = () =>
 
     // Display marker
     tempMarker.off('popupclose');
+    tempMarker.setOpacity(1);
     tempMarker
       .bindPopup('Workout', {
         ...popupOptions,
