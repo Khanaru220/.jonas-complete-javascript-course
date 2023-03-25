@@ -65,3 +65,31 @@ inputType.addEventListener('change', function () {
 [(inputDistance, inputDuration)].forEach(el => {
   el.addEventListener('input', calculateMeasurement);
 });
+
+class Workout {
+  constructor() {
+    // location, distance, time
+  }
+}
+
+class Running extends Workout {
+  constructor() {
+    super();
+  }
+  get cadence() {
+    // distance / time (?step)
+  }
+}
+
+class Cycling extends Workout {
+  constructor() {
+    super();
+  }
+  get elevation() {
+    // distance / time
+  }
+}
+
+class App {
+  constructor() {}
+}
