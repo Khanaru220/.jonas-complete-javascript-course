@@ -8,6 +8,8 @@
 // 2. check whether both not empty
 // 3. calculate the cadence
 
+'use strict';
+
 const btnSubmit = document.querySelector('.form__btn');
 let currentMeasureInput = inputCadence;
 
@@ -65,31 +67,3 @@ inputType.addEventListener('change', function () {
 [(inputDistance, inputDuration)].forEach(el => {
   el.addEventListener('input', calculateMeasurement);
 });
-
-class Workout {
-  constructor() {
-    // location, distance, time
-  }
-}
-
-class Running extends Workout {
-  constructor() {
-    super();
-  }
-  get cadence() {
-    // distance / time (?step)
-  }
-}
-
-class Cycling extends Workout {
-  constructor() {
-    super();
-  }
-  get elevation() {
-    // distance / time
-  }
-}
-
-class App {
-  constructor() {}
-}
