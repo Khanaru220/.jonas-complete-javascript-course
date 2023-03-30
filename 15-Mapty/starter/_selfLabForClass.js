@@ -38,9 +38,9 @@ class App {
   // (?) why need class for 'App', we could use variable 'App' instead. Will we have app1/app2?
   workouts = {};
   constructor() {}
-  _getPosition = () =>
+  _getPosition() {
     // convert callback to promise: https://whatwebcando.today/articles/use-geolocation-api-promises/
-    new Promise(resolve =>
+    return new Promise(resolve =>
       navigator.geolocation.getCurrentPosition(
         position => resolve(position),
         () => {
@@ -60,15 +60,43 @@ class App {
         }
       )
     );
+  }
+  _loadMap(latitude, longitude) {
+    const map = L.map('map', { doubleClickZoom: false }).setView(
+      [latitude, longitude],
+      16
+    ); // initilize Leaflet map: enable mouse, touch event (like bone)
+
+    // add tile layer from OpenStreetMap via URL template (like skin)
+    L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+      maxZoom: 19, // prevent continue scroll-in
+      attribution:
+        '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(map);
+
+    /*
+    // reset form when popup (re)open
+    map.on('popupopen', () => {
+      form.reset();
+      btnSubmit.style.display = 'none'; // (IDEA) find better way to sync submit btn with input
+    });
+
+    // add event click to get coordination + move marker
+    map.on('click', mapEvent => {
+      createTempMarker(mapEvent);
+    });
+    */
+  }
 }
 
 // (TODO) (before watching video) try create instances + class App (woooo!)
-const app = new App();
+const app = new App(); // (?) why should construct when load page?
 
 const dataWorkoutSubmitted = {
   type: 'cycling',
   distance: +'12',
   time: +'20',
+  // (?) where shoule we standardlize data (from input sources OR in function itself)
 };
 
 let instanceWorkout;
@@ -90,38 +118,21 @@ if (dataWorkoutSubmitted.type === 'running') {
   const {
     coords: { latitude, longitude },
   } = await app._getPosition();
-  const coords = [latitude, longitude];
-  const map = L.map('map', { doubleClickZoom: false }).setView(coords, 16); // initilize Leaflet map: enable mouse, touch event (like bone)
+
+  app._loadMap(latitude, longitude);
+
+  /*
   let tempMarker;
   let popupOptions = {};
-
-  // add tile layer from OpenStreetMap via URL template (like skin)
-  L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-    maxZoom: 19, // prevent continue scroll-in
-    attribution:
-      '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-  }).addTo(map);
-
-  // reset form when popup (re)open
-  map.on('popupopen', () => {
-    form.reset();
-    btnSubmit.style.display = 'none'; // (IDEA) find better way to sync submit btn with input
-  });
-
-  // add event click to get coordination + move marker
-  map.on('click', mapEvent => {
-    createTempMarker(mapEvent);
-  });
-
   // creat tempMarker on click map
   const createTempMarker = mapEvent => {
     // (TODO) new marker cause focus on input field
     const { lat: latitude, lng: longitude } = mapEvent.latlng;
     const coords = [latitude, longitude];
-    /*  (?) when call addTo(map) after openPopup(), popup won't open
-    (assume) returned value (map,popup) effect subject of method
+    (?) when call addTo(map) after openPopup(), popup won't open
+    - (assume) returned value (map,popup) effect subject of method
     - addTo(map) will trigger some autoClose behaviour of popup
-     */
+    
     popupOptions = {
       maxWidth: 250,
       minWidth: 100,
@@ -165,6 +176,8 @@ if (dataWorkoutSubmitted.type === 'running') {
   };
   form.addEventListener('submit', addPersistMarkerOnSubmit);
   // (?) should i put this function outside async()?
+
+  */
 })();
 
 // ----- TEST AREA (end) -----
