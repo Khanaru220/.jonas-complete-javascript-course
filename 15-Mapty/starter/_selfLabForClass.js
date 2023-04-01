@@ -37,6 +37,9 @@ class Cycling extends Workout {
 class App {
   // (?) why need class for 'App', we could use variable 'App' instead. Will we have app1/app2?
   workouts = {};
+  _map;
+  _tempMarker;
+  _popupOptions = {};
   constructor() {}
   _getPosition() {
     // convert callback to promise: https://whatwebcando.today/articles/use-geolocation-api-promises/
@@ -62,7 +65,7 @@ class App {
     );
   }
   _loadMap(latitude, longitude) {
-    const map = L.map('map', { doubleClickZoom: false }).setView(
+    this._map = L.map('map', { doubleClickZoom: false }).setView(
       [latitude, longitude],
       16
     ); // initilize Leaflet map: enable mouse, touch event (like bone)
@@ -72,16 +75,98 @@ class App {
       maxZoom: 19, // prevent continue scroll-in
       attribution:
         '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    }).addTo(map);
+    }).addTo(this._map);
 
     // reset form when popup (re)open
-    map.on('popupopen', () => {
+    this._map.on('popupopen', () => {
       form.reset();
       btnSubmit.style.display = 'none'; // (IDEA) find better way to sync submit btn with input
     });
-
     // add event click to get coordination + move marker
-    map.on('click', createTempMarker);
+    this._map.on('click', this._showFormAndTempMarker.bind(this));
+    // (!) urgly hack to sovle case: a method also a listener (this could be hanlder/class)
+    // -another option: add event hanlder inside method; here, only for calling that method
+    // -create _init() to add event hanlder to map + initial things
+    this._toggleElementField();
+  }
+  _showFormAndTempMarker(mapEvent) {
+    form.classList.remove('hidden');
+    inputDistance.focus();
+
+    const { lat: latitude, lng: longitude } = mapEvent.latlng;
+    // (?) when call addTo(map) after openPopup(), popup won't open
+    // - (assume) returned value (map,popup) effect subject of method
+    // - addTo(map) will trigger some autoClose behaviour of popup
+
+    this._popupOptions = {
+      maxWidth: 250,
+      minWidth: 100,
+    };
+
+    this._tempMarker = L.marker([latitude, longitude], { opacity: 0.3 })
+      .bindPopup('Set your goal', this._popupOptions)
+      .on('popupclose', function () {
+        this.remove(); // make use of popup behaviour "autoclost,closeonclick"
+        // (TODO) remove: when click another marker (which closes its popup)
+      })
+      .addTo(this._map)
+      .openPopup();
+    // (!) non-pure function, relate with outter scope var: 'tempMarker';  cause order of functions executions matter
+  }
+  _toggleElementField() {
+    let currentMeasureInput = inputCadence;
+
+    const calculateMeasurement = () => {
+      if (
+        [inputDistance, inputDuration].every(
+          el => el.value !== '' && !isNaN(+el.value) && isFinite(+el.value)
+        )
+      ) {
+        // round to specific decimal: https://stackoverflow.com/a/12830454/14733188
+        currentMeasureInput.value =
+          Math.round((inputDistance.value / inputDuration.value) * 100) / 100;
+        btnSubmit.style.display = 'initial';
+      } else {
+        currentMeasureInput.value = null;
+        btnSubmit.style.display = 'none';
+      }
+    };
+
+    const switchWorkoutTypeInput = () => {
+      switch (inputType.value) {
+        case 'running':
+          // Sync result from current measurement
+          inputCadence.value = currentMeasureInput.value;
+
+          // Switch to new measurement
+          currentMeasureInput = inputCadence;
+
+          // Switch display
+          inputElevation
+            .closest('.form__row')
+            .classList.add('form__row--hidden');
+          break;
+        case 'cycling':
+          inputElevation.value = currentMeasureInput.value;
+
+          currentMeasureInput = inputElevation;
+
+          inputCadence.closest('.form__row').classList.add('form__row--hidden');
+          break;
+        default:
+          break;
+      }
+
+      currentMeasureInput
+        .closest('.form__row')
+        .classList.remove('form__row--hidden');
+      // (TODO) it's seems i could make it less repeat
+    };
+    inputType.addEventListener('change', switchWorkoutTypeInput);
+
+    [(inputDistance, inputDuration)].forEach(el => {
+      el.addEventListener('input', calculateMeasurement);
+    });
   }
 }
 
@@ -118,37 +203,10 @@ if (dataWorkoutSubmitted.type === 'running') {
   app._loadMap(latitude, longitude);
 })();
 
-let tempMarker;
-let popupOptions = {};
-// creat tempMarker on click map
-const createTempMarker = mapEvent => {
-  console.log('createTempMarker');
-  console.log(mapEvent);
-  // (TODO) new marker cause focus on input field
-  const { lat: latitude, lng: longitude } = mapEvent.latlng;
-  // (?) when call addTo(map) after openPopup(), popup won't open
-  // - (assume) returned value (map,popup) effect subject of method
-  // - addTo(map) will trigger some autoClose behaviour of popup
+// let tempMarker;
+// let popupOptions = {};
 
-  popupOptions = {
-    maxWidth: 250,
-    minWidth: 100,
-  };
-  tempMarker = L.marker([latitude, longitude], { opacity: 0.3 })
-    .bindPopup('Set your goal', popupOptions)
-    .on('popupclose', function () {
-      this.remove(); // make use of popup behaviour "autoclost,closeonclick"
-      // (TODO) remove: when click another marker (which closes its popup)
-    })
-    .addTo(map)
-    .openPopup();
-  // (!) non-pure function, relate with outter scope var: 'tempMarker';  cause order of functions executions matter
-
-  inputDistance.focus();
-  form.classList.remove('hidden');
-};
-
-// submit form -> marker persist + update popup content/options
+// // submit form -> marker persist + update popup content/options
 // const addPersistMarkerOnSubmit = e => {
 //   e.preventDefault();
 
@@ -172,6 +230,6 @@ const createTempMarker = mapEvent => {
 //   tempMarker = undefined;
 // };
 // form.addEventListener('submit', addPersistMarkerOnSubmit);
-// (?) should i put this function outside async()?
+// // (?) should i put this function outside async()?
 
 // ----- TEST AREA (end) -----
