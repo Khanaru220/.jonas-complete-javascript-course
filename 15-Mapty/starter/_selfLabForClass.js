@@ -74,7 +74,6 @@ class App {
         '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(map);
 
-    /*
     // reset form when popup (re)open
     map.on('popupopen', () => {
       form.reset();
@@ -82,10 +81,7 @@ class App {
     });
 
     // add event click to get coordination + move marker
-    map.on('click', mapEvent => {
-      createTempMarker(mapEvent);
-    });
-    */
+    map.on('click', createTempMarker);
   }
 }
 
@@ -120,64 +116,62 @@ if (dataWorkoutSubmitted.type === 'running') {
   } = await app._getPosition();
 
   app._loadMap(latitude, longitude);
-
-  /*
-  let tempMarker;
-  let popupOptions = {};
-  // creat tempMarker on click map
-  const createTempMarker = mapEvent => {
-    // (TODO) new marker cause focus on input field
-    const { lat: latitude, lng: longitude } = mapEvent.latlng;
-    const coords = [latitude, longitude];
-    (?) when call addTo(map) after openPopup(), popup won't open
-    - (assume) returned value (map,popup) effect subject of method
-    - addTo(map) will trigger some autoClose behaviour of popup
-    
-    popupOptions = {
-      maxWidth: 250,
-      minWidth: 100,
-    };
-    tempMarker = L.marker(coords, { opacity: 0.3 })
-      .bindPopup('Set your goal', popupOptions)
-      .on('popupclose', function () {
-        this.remove(); // make use of popup behaviour "autoclost,closeonclick"
-        // (TODO) remove: when click another marker (which closes its popup)
-      })
-      .addTo(map)
-      .openPopup();
-    // (!) non-pure function, relate with outter scope var: 'tempMarker';  cause order of functions executions matter
-
-    inputDistance.focus();
-    form.classList.remove('hidden');
-  };
-
-  // submit form -> marker persist + update popup content/options
-  const addPersistMarkerOnSubmit = e => {
-    e.preventDefault();
-
-    if (!tempMarker) return;
-
-    // Display marker
-    tempMarker.off('popupclose');
-    tempMarker.setOpacity(1);
-    tempMarker
-      .bindPopup('Workout', {
-        ...popupOptions,
-        autoClose: false,
-        closeOnClick: false,
-        className: 'running-popup',
-      })
-      .openPopup();
-    // (IDEA) find official way to update popup (my way need to keep track previous option object)
-
-    // Reset form, prevent form re-submit with previous Marker
-    form.classList.add('hidden');
-    tempMarker = undefined;
-  };
-  form.addEventListener('submit', addPersistMarkerOnSubmit);
-  // (?) should i put this function outside async()?
-
-  */
 })();
+
+let tempMarker;
+let popupOptions = {};
+// creat tempMarker on click map
+const createTempMarker = mapEvent => {
+  console.log('createTempMarker');
+  console.log(mapEvent);
+  // (TODO) new marker cause focus on input field
+  const { lat: latitude, lng: longitude } = mapEvent.latlng;
+  // (?) when call addTo(map) after openPopup(), popup won't open
+  // - (assume) returned value (map,popup) effect subject of method
+  // - addTo(map) will trigger some autoClose behaviour of popup
+
+  popupOptions = {
+    maxWidth: 250,
+    minWidth: 100,
+  };
+  tempMarker = L.marker([latitude, longitude], { opacity: 0.3 })
+    .bindPopup('Set your goal', popupOptions)
+    .on('popupclose', function () {
+      this.remove(); // make use of popup behaviour "autoclost,closeonclick"
+      // (TODO) remove: when click another marker (which closes its popup)
+    })
+    .addTo(map)
+    .openPopup();
+  // (!) non-pure function, relate with outter scope var: 'tempMarker';  cause order of functions executions matter
+
+  inputDistance.focus();
+  form.classList.remove('hidden');
+};
+
+// submit form -> marker persist + update popup content/options
+// const addPersistMarkerOnSubmit = e => {
+//   e.preventDefault();
+
+//   if (!tempMarker) return;
+
+//   // Display marker
+//   tempMarker.off('popupclose');
+//   tempMarker.setOpacity(1);
+//   tempMarker
+//     .bindPopup('Workout', {
+//       ...popupOptions,
+//       autoClose: false,
+//       closeOnClick: false,
+//       className: 'running-popup',
+//     })
+//     .openPopup();
+//   // (IDEA) find official way to update popup (my way need to keep track previous option object)
+
+//   // Reset form, prevent form re-submit with previous Marker
+//   form.classList.add('hidden');
+//   tempMarker = undefined;
+// };
+// form.addEventListener('submit', addPersistMarkerOnSubmit);
+// (?) should i put this function outside async()?
 
 // ----- TEST AREA (end) -----
