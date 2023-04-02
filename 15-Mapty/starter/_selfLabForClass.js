@@ -117,11 +117,7 @@ class App {
     let currentMeasureInput = inputCadence;
 
     const calculateMeasurement = () => {
-      if (
-        [inputDistance, inputDuration].every(
-          el => el.value !== '' && !isNaN(+el.value) && isFinite(+el.value)
-        )
-      ) {
+      if ([inputDistance, inputDuration].every(el => isNumeric(+el.value))) {
         // round to specific decimal: https://stackoverflow.com/a/12830454/14733188
         currentMeasureInput.value =
           Math.round((inputDistance.value / inputDuration.value) * 100) / 100;
@@ -233,3 +229,11 @@ if (dataWorkoutSubmitted.type === 'running') {
 // // (?) should i put this function outside async()?
 
 // ----- TEST AREA (end) -----
+
+const isNumeric = input => {
+  // isFinite: coerse to number
+  // -NaN and Infinity both counted as false
+  // (first time use chat-gpt.org/chat - not offical one, but need argue a little bit
+  // - about !isNaN(), might be isFinite() got updated recently to also check NaN)
+  return input !== '' && isFinite(input);
+};
